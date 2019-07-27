@@ -1,0 +1,31 @@
+{
+  "name": "blog_engine",
+  "version": "0.0.1",
+  "description": "blog example for pratice node js",
+  "main": "server.js",
+  "scripts": {
+    "test": "PORT= 3000 NODE_ENV=development node server",
+    "dev": "PORT= 3000 NODE_ENV=development nodemon server",
+    "start": "node server"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "blog",
+    "pratice",
+    "tests"
+  ],
+  "author": "Deivison",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}
