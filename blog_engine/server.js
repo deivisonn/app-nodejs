@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const handlebars = require('express-handlebars');
+const mongoose = require('mongoose');
 const path = require('path');
-const main = require('./routes/routes')
+const main = require('./routes/mainRoutes')
 const app = express();
+
 
 const {
     PORT,
@@ -21,7 +23,6 @@ const {
     app.use(bodyParser.urlencoded({
         extended: false 
     }))
-    
 //Routes
 
 
