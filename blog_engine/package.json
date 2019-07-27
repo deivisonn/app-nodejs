@@ -4,8 +4,8 @@
   "description": "blog example for pratice node js",
   "main": "server.js",
   "scripts": {
-    "test": "PORT= 3000 NODE_ENV=development node server",
-    "dev": "PORT= 3000 NODE_ENV=development nodemon server",
+    "test": "PORT=3000 NODE_ENV=development node server",
+    "dev": "PORT=3000 NODE_ENV=development nodemon server",
     "start": "node server"
   },
   "repository": {
