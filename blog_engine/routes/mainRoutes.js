@@ -31,8 +31,8 @@ router.post('/login', (req,res)=>{
     res.status(201).send();
 });
 
-router.post('/register', (req,res)=>{
-
+router.post('/register', (req,res)=>{ 
+    //CHECK USERS EMAIL DISPONIBNLITY
     userModel.findOne({email: req.body.email}, (err, user)=>{
         if (err){
             res.status(400).send(err);
@@ -40,6 +40,7 @@ router.post('/register', (req,res)=>{
         if(user){
             res.redirect('/register')
         }else {
+            //VALIDATE USER INPUTS
             const schema = Joi.object().keys({
                 username: Joi.string().alphanum().min(3).max(30).required(),
                 password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
@@ -52,22 +53,30 @@ router.post('/register', (req,res)=>{
                 email: req.body.email
             }, schema)
 
+            //STORE NEW USER IN DB
             if(result.error === null){
-                const user = new userModel();
-    
-                user.name = req.body.name;
-                user.password = req.body.password;
-                user.email = req.body.email;
-                user.save({})
-                .then(()=>{
-                    console.log('success')
-                })
-                .catch((err)=>{
-                    console.log(err)
-                });
-                res.status(201).redirect('/');
+
+                const password = req.body.password;
+                const userM = new userModel();
+
+                const HashPassword = async (userPassword, user)=>{
+                    try{	
+                        const hashedPassword = await bcrypt.hash(userPassword,10);
+                        user.name = req.body.name;
+                        user.email = req.body.email;
+                        user.password = hashedPassword;
+                        await user.save({});
+                        res.status(201).redirect('/');
+                    }catch(e) {
+                        console.log(e);
+                        res.status(401).redirect('/register');
+                    }	
+                }
+
+                HashPassword(password, userM);
+
             }else{
-                console.log('verify the data and try again')
+                console.log(result.error);
                 res.status(400).redirect('/register')
             }
         }
