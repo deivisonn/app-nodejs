@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const handlebars = require('express-handlebars');
-const mongoose = require('mongoose');
 const path = require('path');
 const main = require('./routes/mainRoutes')
 const app = express();
@@ -24,7 +23,6 @@ const {
         extended: false 
     }))
 //Routes
-
 
 app.use('/', main);
 

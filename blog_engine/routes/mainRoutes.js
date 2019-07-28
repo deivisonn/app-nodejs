@@ -1,5 +1,6 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const Joi =  require('@hapi/joi');
 const bodyParser = require('body-parser');
 const router = express.Router();
 const mongoConnect = require('../models/mongo_connect');
@@ -14,6 +15,7 @@ const mongoConnect = require('../models/mongo_connect');
     const userModel = require('../models/userModel');
 
 router.get('/',(req,res)=>{
+    let results = userModel.find({name: 'q'})
     res.status(200).render('home', {style: 'home.css'});
 });
 
@@ -30,19 +32,48 @@ router.post('/login', (req,res)=>{
 });
 
 router.post('/register', (req,res)=>{
-    const user = new userModel();
+
+    userModel.findOne({email: req.body.email}, (err, user)=>{
+        if (err){
+            res.status(400).send(err);
+        };
+        if(user){
+            res.redirect('/register')
+        }else {
+            const schema = Joi.object().keys({
+                username: Joi.string().alphanum().min(3).max(30).required(),
+                password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+                email: Joi.string().email({minDomnainSegments: 2}).required()
+            }).with('password', 'email');
+        
+            const result = Joi.validate({
+                username: req.body.name,
+                password: req.body.password,
+                email: req.body.email
+            }, schema)
+
+            if(result.error === null){
+                const user = new userModel();
     
-    user.name = req.body.name;
-    user.password = req.body.password;
-    user.email = req.body.email;
-    user.save({})
-    .then(()=>{
-        console.log('success')
-    })
-    .catch((err)=>{
-        console.log(err)
+                user.name = req.body.name;
+                user.password = req.body.password;
+                user.email = req.body.email;
+                user.save({})
+                .then(()=>{
+                    console.log('success')
+                })
+                .catch((err)=>{
+                    console.log(err)
+                });
+                res.status(201).redirect('/');
+            }else{
+                console.log('verify the data and try again')
+                res.status(400).redirect('/register')
+            }
+        }
     });
-    res.status(201).send();
+
+    
 });
 
 module.exports = router;
