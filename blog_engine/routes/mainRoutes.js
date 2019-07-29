@@ -28,7 +28,42 @@ router.get('/register', (req,res)=>{
 });
 
 router.post('/login', (req,res)=>{
-    res.status(201).send();
+    userModel.findOne({email: req.body.email}, (err, user)=>{
+        if(err){
+            console.log(err);
+            res.status(400).redirect('/login');
+        }
+
+        if(user){
+            // res.status(201).send();
+            const inputPass = req.body.password; 
+            const userPass = user.password;
+
+            const ComparePassword = async (reqPass, dbPass)=>{
+                try {
+                    const match = await bcrypt.compare(reqPass, dbPass);
+                    if(match){
+                        console.log('deu match')
+                        res.status(200).redirect('/')
+                    }
+                    console.log('nao deu match')
+                    console.log(match);
+                    res.status(400).redirect('/login')
+                    
+                    
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            ComparePassword(inputPass, userPass);
+
+        }else{
+            res.status(400).redirect('/login');
+        }
+        
+    });
+    
 });
 
 router.post('/register', (req,res)=>{ 
@@ -80,9 +115,7 @@ router.post('/register', (req,res)=>{
                 res.status(400).redirect('/register')
             }
         }
-    });
-
-    
+    }) 
 });
 
 module.exports = router;
