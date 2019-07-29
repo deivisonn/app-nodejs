@@ -4,6 +4,7 @@ const Joi =  require('@hapi/joi');
 const bodyParser = require('body-parser');
 const router = express.Router();
 const mongoConnect = require('../models/mongo_connect');
+const passport = require('passport');
 
 //CONFIG
 	//Body-parser
@@ -27,43 +28,12 @@ router.get('/register', (req,res)=>{
     res.status(200).render('register');
 });
 
-router.post('/login', (req,res)=>{
-    userModel.findOne({email: req.body.email}, (err, user)=>{
-        if(err){
-            console.log(err);
-            res.status(400).redirect('/login');
-        }
-
-        if(user){
-            // res.status(201).send();
-            const inputPass = req.body.password; 
-            const userPass = user.password;
-
-            const ComparePassword = async (reqPass, dbPass)=>{
-                try {
-                    const match = await bcrypt.compare(reqPass, dbPass);
-                    if(match){
-                        console.log('deu match')
-                        res.status(200).redirect('/')
-                    }
-                    console.log('nao deu match')
-                    console.log(match);
-                    res.status(400).redirect('/login')
-                    
-                    
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-
-            ComparePassword(inputPass, userPass);
-
-        }else{
-            res.status(400).redirect('/login');
-        }
-        
-    });
-    
+router.post('/login', (req,res,next)=>{
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login',
+        failureFlash: true
+    })(req,res,next)
 });
 
 router.post('/register', (req,res)=>{ 

@@ -4,8 +4,8 @@
   "description": "blog example for pratice node js",
   "main": "server.js",
   "scripts": {
-    "test": "PORT=3000 NODE_ENV=development node server",
-    "dev": "PORT=3000 NODE_ENV=development nodemon server",
+    "test": "node server",
+    "dev": "nodemon server",
     "start": "node server"
   },
   "repository": {
@@ -23,9 +23,13 @@
     "@hapi/joi": "^15.1.0",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
     "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
-    "mongoose": "^5.6.7"
+    "express-session": "^1.16.2",
+    "mongoose": "^5.6.7",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"

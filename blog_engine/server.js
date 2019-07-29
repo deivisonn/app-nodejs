@@ -4,15 +4,39 @@ const handlebars = require('express-handlebars');
 const path = require('path');
 const main = require('./routes/mainRoutes')
 const app = express();
+const session = require('express-session');
+const flash = require('connect-flash');
+const passport =  require('passport');
+require('./config/auth')(passport);
 
 
 const {
-    PORT,
+    PORT= 3000,
 
-    NODE_ENV
+    SESS_SECRET='53cre73',
+    NODE_ENV= 'development'
 } = process.env
 
 //Config.
+    //SESSION
+    app.use(session({
+        secret: SESS_SECRET,
+        resave: true,
+        saveUninitialized: true
+    }));
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(flash());
+
+    //MIDDLEWARE
+    app.use((req,res,next)=>{
+        res.locals.success_msg =  req.flash('success_msg');
+        res.locals.error_msg = req.flash('error_msg');
+        res.locals.error = req.flash('error');    
+        next();
+    });
+    
+
     //Static files
     app.use(express.static('public'));
     //Tamplete engine
