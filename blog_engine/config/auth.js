@@ -3,9 +3,10 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 
 module.exports = function(passport){
-    passport.use(new localStrategy({usernameField: 'email'}, (email,password, done)=>{
+    const authenticateUser = (email,password, done)=>{
         
-        userModel.findOne({email: email}).then(user =>{
+        userModel.findOne({email: email})
+        .then(user =>{
             if(!user){
                 return done(null, false, {message:'cannot find any count for this email'})
             }
@@ -19,7 +20,9 @@ module.exports = function(passport){
             });
 
         })
-    }));
+    }
+    
+    passport.use(new localStrategy({usernameField: 'email'}, authenticateUser));
 
     passport.serializeUser((user, done)=>{
         done(null, user.id);

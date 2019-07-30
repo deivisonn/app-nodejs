@@ -15,20 +15,20 @@ const passport = require('passport');
     mongoConnect(DataBase);
     const userModel = require('../models/userModel');
 
-router.get('/',(req,res)=>{
+router.get('/', checkAuthenticated, (req,res)=>{
     let results = userModel.find({name: 'q'})
     res.status(200).render('home', {style: 'home.css'});
 });
 
-router.get('/login', (req,res)=>{
+router.get('/login', checkNotAuthenticated, (req,res)=>{
     res.status(200).render('login');
 });
 
-router.get('/register', (req,res)=>{
+router.get('/register', checkNotAuthenticated, (req,res)=>{
     res.status(200).render('register');
 });
 
-router.post('/login', (req,res,next)=>{
+router.post('/login', checkNotAuthenticated, (req,res,next)=>{
     passport.authenticate('local', {
         successRedirect: '/',
         failureRedirect: '/login',
@@ -36,7 +36,7 @@ router.post('/login', (req,res,next)=>{
     })(req,res,next)
 });
 
-router.post('/register', (req,res)=>{ 
+router.post('/register', checkNotAuthenticated,(req,res)=>{ 
     //CHECK USERS EMAIL DISPONIBNLITY
     userModel.findOne({email: req.body.email}, (err, user)=>{
         if (err){
@@ -87,5 +87,20 @@ router.post('/register', (req,res)=>{
         }
     }) 
 });
+
+function checkAuthenticated(req, res, next){
+	if (req.isAuthenticated()) {
+		return next()
+	}
+
+	res.redirect('/login')
+}
+
+function checkNotAuthenticated(req, res, next){
+	if (req.isAuthenticated()) {
+		return res.redirect('/')
+	}
+	next()
+}
 
 module.exports = router;
